@@ -1,6 +1,8 @@
-import PredictionForm from "@/components/PredictionForm";
 import { Card, CardContent } from "@/components/ui/card";
 import { Briefcase, TrendingUp, Award, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import Navbar from "@/components/Navbar";
 
 const Index = () => {
   const dummyData = [
@@ -49,6 +51,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Navbar />
+      
       {/* Hero Section */}
       <div className="bg-gradient-to-b from-primary/5 to-background border-b">
         <div className="container mx-auto px-4 py-16">
@@ -56,9 +60,14 @@ const Index = () => {
             <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Job Prediction AI
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
               Enter job details and get AI-powered predictions on job fit, salary expectations, and career insights
             </p>
+            <Link to="/predict">
+              <Button size="lg" className="text-lg px-8">
+                Get Started
+              </Button>
+            </Link>
           </header>
 
           {/* Features Grid */}
@@ -74,11 +83,6 @@ const Index = () => {
             ))}
           </div>
         </div>
-      </div>
-
-      {/* Main Form Section */}
-      <div className="container mx-auto px-4 py-12">
-        <PredictionForm />
       </div>
 
       {/* Dummy Data Examples */}
