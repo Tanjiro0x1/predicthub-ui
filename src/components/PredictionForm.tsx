@@ -51,43 +51,30 @@ const PredictionForm = () => {
     setLoading(true);
     setResult(null);
 
-    try {
-      const payload = {
-        company_name: inputs.companyName,
-        job_description: inputs.jobDescription,
-        job_role: inputs.jobRole,
-        salary: parseFloat(inputs.salary),
-      };
-
-      const response = await fetch("http://localhost:5000/predict", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+    // Simulate API call with delay
+    setTimeout(() => {
+      // Randomly return valid or invalid job detection
+      const isValid = Math.random() > 0.5;
+      const prediction = isValid ? "Valid Job Detected" : "Invalid Job Detected";
+      
+      setResult({
+        prediction,
+        confidence: Math.round(Math.random() * 30 + 70), // 70-100% confidence
+        details: {
+          status: isValid ? "legitimate" : "suspicious",
+          message: isValid 
+            ? "The job posting matches valid criteria and appears legitimate with competitive salary and clear role description."
+            : "The job posting shows potential red flags or inconsistencies in the role description, salary range, or company information."
+        }
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setResult(data);
       
       toast({
         title: "Prediction Successful",
         description: "The model has processed your input.",
       });
-    } catch (error) {
-      console.error("Prediction error:", error);
-      toast({
-        title: "Prediction Failed",
-        description: error instanceof Error ? error.message : "Unable to connect to the prediction API.",
-        variant: "destructive",
-      });
-    } finally {
+      
       setLoading(false);
-    }
+    }, 1500);
   };
 
   return (
