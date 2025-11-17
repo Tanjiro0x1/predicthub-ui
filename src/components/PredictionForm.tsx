@@ -14,14 +14,13 @@ interface PredictionResult {
 
 const PredictionForm = () => {
   const [inputs, setInputs] = useState({
-    feature1: "",
-    feature2: "",
-    feature3: "",
-    feature4: "",
+    companyName: "",
+    jobDescription: "",
+    jobRole: "",
+    salary: "",
   });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PredictionResult | null>(null);
-  const [apiEndpoint, setApiEndpoint] = useState("http://localhost:5000/predict");
 
   const handleInputChange = (field: string, value: string) => {
     setInputs((prev) => ({ ...prev, [field]: value }));
@@ -31,11 +30,19 @@ const PredictionForm = () => {
     e.preventDefault();
     
     // Validate inputs
-    const values = Object.values(inputs);
-    if (values.some((val) => val === "" || isNaN(Number(val)))) {
+    if (!inputs.companyName || !inputs.jobRole || !inputs.jobDescription || !inputs.salary) {
       toast({
-        title: "Invalid Input",
-        description: "Please enter valid numerical values for all fields.",
+        title: "Missing Information",
+        description: "Please fill in all fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (isNaN(Number(inputs.salary))) {
+      toast({
+        title: "Invalid Salary",
+        description: "Please enter a valid numerical value for salary.",
         variant: "destructive",
       });
       return;
@@ -46,15 +53,13 @@ const PredictionForm = () => {
 
     try {
       const payload = {
-        features: [
-          parseFloat(inputs.feature1),
-          parseFloat(inputs.feature2),
-          parseFloat(inputs.feature3),
-          parseFloat(inputs.feature4),
-        ],
+        company_name: inputs.companyName,
+        job_description: inputs.jobDescription,
+        job_role: inputs.jobRole,
+        salary: parseFloat(inputs.salary),
       };
 
-      const response = await fetch(apiEndpoint, {
+      const response = await fetch("http://localhost:5000/predict", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -95,69 +100,51 @@ const PredictionForm = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="feature1">Feature 1</Label>
+              <Label htmlFor="companyName">Company Name</Label>
               <Input
-                id="feature1"
-                type="number"
-                step="any"
-                placeholder="Enter value"
-                value={inputs.feature1}
-                onChange={(e) => handleInputChange("feature1", e.target.value)}
-                disabled={loading}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="feature2">Feature 2</Label>
-              <Input
-                id="feature2"
-                type="number"
-                step="any"
-                placeholder="Enter value"
-                value={inputs.feature2}
-                onChange={(e) => handleInputChange("feature2", e.target.value)}
-                disabled={loading}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="feature3">Feature 3</Label>
-              <Input
-                id="feature3"
-                type="number"
-                step="any"
-                placeholder="Enter value"
-                value={inputs.feature3}
-                onChange={(e) => handleInputChange("feature3", e.target.value)}
-                disabled={loading}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="feature4">Feature 4</Label>
-              <Input
-                id="feature4"
-                type="number"
-                step="any"
-                placeholder="Enter value"
-                value={inputs.feature4}
-                onChange={(e) => handleInputChange("feature4", e.target.value)}
-                disabled={loading}
-              />
-            </div>
-
-            <div className="space-y-2 pt-2">
-              <Label htmlFor="endpoint" className="text-sm text-muted-foreground">
-                API Endpoint (optional)
-              </Label>
-              <Input
-                id="endpoint"
+                id="companyName"
                 type="text"
-                placeholder="http://localhost:5000/predict"
-                value={apiEndpoint}
-                onChange={(e) => setApiEndpoint(e.target.value)}
+                placeholder="e.g., Tech Corp"
+                value={inputs.companyName}
+                onChange={(e) => handleInputChange("companyName", e.target.value)}
                 disabled={loading}
-                className="text-sm"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="jobRole">Job Role</Label>
+              <Input
+                id="jobRole"
+                type="text"
+                placeholder="e.g., Software Engineer"
+                value={inputs.jobRole}
+                onChange={(e) => handleInputChange("jobRole", e.target.value)}
+                disabled={loading}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="jobDescription">Job Description</Label>
+              <textarea
+                id="jobDescription"
+                className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                placeholder="Enter job description and requirements..."
+                value={inputs.jobDescription}
+                onChange={(e) => handleInputChange("jobDescription", e.target.value)}
+                disabled={loading}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="salary">Expected Salary</Label>
+              <Input
+                id="salary"
+                type="number"
+                step="any"
+                placeholder="e.g., 85000"
+                value={inputs.salary}
+                onChange={(e) => handleInputChange("salary", e.target.value)}
+                disabled={loading}
               />
             </div>
 
